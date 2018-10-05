@@ -6,13 +6,15 @@
 \alias{CellCycle,MAGeCKFlute-method}
 \title{Estimate cell cycle time for all samples compared to control sample and view.}
 \usage{
-CellCycleView(beta, ctrlname = "Control", main = NULL, filename = NULL,
+CellCycleView(beta, ctrlname, treatname, main = NULL, filename = NULL,
   width = 5, height = 4, ...)
 }
 \arguments{
-\item{beta}{Data frame, which has columns of 'Gene', \code{ctrlname} and other samples.}
+\item{beta}{Data frame, which has columns of \code{ctrlname} and other samples.}
 
-\item{ctrlname}{Character vector, specifying the name of control sample.}
+\item{ctrlname}{A character, specifying the names of control samples.}
+
+\item{treatname}{A character, specifying the name of treatment samples.}
 
 \item{main}{As in 'plot'.}
 
@@ -32,19 +34,11 @@ An object created by \code{ggplot}, which can be assigned and further customized
 Estimate cell cycle time in different samples by linear fitting of beta scores, and plot fitting lines,
 in which x-axis is control beta score and y-axis is beta score of all samples.
 }
-\note{
-See the vignette for an example of cell cycle estimate and view.
-Note that the source code of \code{CellCycleFit} is very simple.
-The source can be found by typing \code{MAGeCKFlute:::CellCycleView}
-or \code{getMethod("CellCycleView")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/CellCycleView.R}
-Users should find it easy to customize this function.
-}
 \examples{
 data(MLE_Data)
 # Read beta score from gene summary table in MAGeCK MLE results
 dd = ReadBeta(MLE_Data, organism="hsa")
-CellCycleView(dd[,-2], ctrlname = c("D7_R1", "D7_R2"))
+CellCycleView(dd, ctrlname = c("D7_R1", "D7_R2"), treatname = c("PLX7_R1", "PLX7_R2"))
 
 }
 \author{

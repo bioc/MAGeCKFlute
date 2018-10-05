@@ -12,31 +12,23 @@
 #' the gene annotation package. For all potential values check: data(bods); bods. Default org="hsa",
 #' and can also be "human" (case insensitive).
 #'
-#' @return A data frame including four columns, named "Gene", "Control", "Treatment", and "ENTREZID".
+#' @return A data frame, in which the first column is ENTREZID, and the later columns are beta score for each samples.
 #'
 #' @author Wubing Zhang
-#'
-#' @note
-#' The source can be found by typing \code{MAGeCKFlute:::ReadBeta}
-#' or \code{getMethod("ReadBeta")}, or
-#' browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/ReadBeta.R}
-#' Users should find it easy to customize this function.
 #'
 #' @examples
 #' data(MLE_Data)
 #' dd = ReadBeta(MLE_Data, organism="hsa")
 #' head(dd)
 #'
-#' @import pathview
-#'
 #' @export
 
 
 #===read gene summary file=============================================
 ReadBeta <- function(gene_summary, organism='hsa'){
-  loginfo("Read gene summary file ...")
+  message(Sys.time(), " # Read gene summary file ...")
 
-  #=========If gene_summary is a path or a data frame====================
+  #=========If gene_summary is a path or a data frame=====
   if(class(gene_summary)=="character" && file.exists(gene_summary)){
     dd=read.table(file=gene_summary,header= TRUE, check.names = FALSE, stringsAsFactors = FALSE)
   }else if(class(gene_summary)=="data.frame" &&
@@ -54,18 +46,12 @@ ReadBeta <- function(gene_summary, organism='hsa'){
   idx[1]= TRUE
   dd=dd[,idx]
   names(dd)=gsub(".beta","",names(dd))
-  dd$ENTREZID = TransGeneID(dd$Gene, "SYMBOL", "ENTREZID", organism = organism)
-  #==============Deal with replicates and convert geneid==================
-  # dd1 = list()
-  # dd1$Gene = dd$Gene
-  # dd1$Control = rowMeans(dd[,ctrlName, drop = FALSE])
-  # dd1$Treatment = rowMeans(dd[,treatName, drop = FALSE])
-  # dd1$ENTREZID = TransGeneID(dd$Gene, "SYMBOL", "ENTREZID", organism = organism)
-  # dd1=as.data.frame(dd1, stringsAsFactors= FALSE)
 
   ##==============Remove NAs=============================================
-  idx = is.na(dd$ENTREZID) | duplicated(dd$ENTREZID)
+  idx = is.na(dd$Gene) | duplicated(dd$Gene)
   dd = dd[!idx,]
-  dd = dd[, c(1,ncol(dd), 2:(ncol(dd)-1))]
+  rownames(dd) = dd$Gene
+  dd = dd[, -1]
+
   return(dd)
 }

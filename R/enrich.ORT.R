@@ -21,12 +21,6 @@
 #'
 #' @author Wubing Zhang
 #'
-#' @note  See the vignette for an example of enrichment analysis using over-representation test
-#' The source can be found by typing \code{MAGeCKFlute:::enrich.ORT}
-#' or \code{getMethod("enrich.ORT")}, or
-#' browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/enrich.ORT.R}
-#' Users should find it easy to customize this function.
-#'
 #' @seealso \code{\link{enrich.HGT}}
 #' @seealso \code{\link{enrich.DAVID}}
 #' @seealso \code{\link{enrich.GOstats}}
@@ -35,31 +29,32 @@
 #' @seealso \code{\link[DOSE]{enrichResult-class}}
 #'
 #' @examples
-#' data(MLE_Data)
-#' universe = TransGeneID(MLE_Data$Gene, "SYMBOL", "ENTREZID", organism = "hsa")
-#' genes = universe[1:50]
-#' enrichRes <- enrich.ORT(genes, universe)
+#' data(geneList, package = "DOSE")
+#' genes <- names(geneList)[1:100]
+#' enrichRes <- enrich.ORT(genes)
 #' head(enrichRes@result)
 #'
-#'
+#' @import DOSE
 #' @import clusterProfiler
 #' @export
 
-enrich.ORT <- function(gene, universe=NULL, type="KEGG", organism = "hsa",pvalueCutoff = 1,
-                       qvalueCutoff = 1, pAdjustMethod = "BH",minGSSize = 2, maxGSSize = 500){
+enrich.ORT <- function(gene, universe=NULL, type="KEGG", organism = "hsa",pvalueCutoff = 0.25,
+                       qvalueCutoff = 0.2, pAdjustMethod = "BH",minGSSize = 2, maxGSSize = 50){
   requireNamespace("clusterProfiler", quietly=TRUE) || stop("need clusterProfiler package")
-  loginfo('Running Over-Representation Test for list of entrezIDs')
   gene = unique(as.character(gene))
   if(!is.null(universe)) universe = unique(as.character(universe))
   organism = getOrg(organism)$org
   orgdb = getOrg(organism)$pkg
   #=======================
   if(type %in% c("BP", "CC", "MF")){
+    # loginfo("(1) Begin to run enrichGO ...")
     enrichedRes = enrichGO(gene=gene,  universe=universe,  ont = type, OrgDb=orgdb,
                            pAdjustMethod = pAdjustMethod, pvalueCutoff = pvalueCutoff, qvalueCutoff = qvalueCutoff,
                            minGSSize=minGSSize, maxGSSize=maxGSSize)
-    if(!is.null(enrichedRes))
-        enrichedRes = simplify(enrichedRes, cutoff=0.7, by="p.adjust", select_fun=min)
+    # if(!is.null(enrichedRes)){
+    #   loginfo("(2) Simlify enrichGO results ...")
+    #   enrichedRes = simplify(enrichedRes, cutoff=0.7, by="p.adjust", select_fun=min)
+    # }
   }
   if(type == "KEGG"){
     enrichedRes = enrichKEGG(gene=gene,  universe=universe, organism = organism,
@@ -79,9 +74,11 @@ enrich.ORT <- function(gene, universe=NULL, type="KEGG", organism = "hsa",pvalue
                             qvalueCutoff=qvalueCutoff, minGSSize = minGSSize, maxGSSize = maxGSSize)
   }
   if(!is.null(enrichedRes)){
+    # loginfo("Add symbol to enrichment results ...")
     geneID = strsplit(enrichedRes@result$geneID, "/")
+    allsymbol = TransGeneID(gene, "Entrez", "Symbol", organism = organism)
     geneName = lapply(geneID, function(gid){
-      SYMBOL = TransGeneID(gid, "ENTREZID", "SYMBOL", organism = organism)
+      SYMBOL = allsymbol[gid]
       paste(SYMBOL, collapse = "/")
     })
     enrichedRes@result$geneName = unlist(geneName)

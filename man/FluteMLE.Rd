@@ -3,14 +3,13 @@
 \docType{methods}
 \name{FluteMLE}
 \alias{FluteMLE}
-\alias{MLEpipeline,}
-\alias{MAGeCKFlute-method}
+\alias{flutemle}
 \title{Downstream analysis based on MAGeCK-MLE result}
 \usage{
 FluteMLE(gene_summary, ctrlname = "Control", treatname = "Treatment",
-  organism = "hsa", prefix = "Test", top = 10, bottom = 10,
-  interestGenes = c(), pvalueCutoff = 1, adjust = "BH",
-  enrich_kegg = "ORT", gsea = FALSE, posControl = NULL,
+  organism = "hsa", prefix = "", top = 10, bottom = 10,
+  interestGenes = c(), pvalueCutoff = 0.25, adjust = "BH",
+  enrich_kegg = "HGT", gsea = FALSE, posControl = NULL,
   scale_cutoff = 1, loess = FALSE, view_allpath = FALSE, outdir = ".")
 }
 \arguments{
@@ -36,7 +35,7 @@ and "mmu" or "Mouse".}
 
 \item{adjust}{One of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".}
 
-\item{enrich_kegg}{One of "ORT"(Over-Representing Test), "DAVID", "GOstats", and "HGT"(HyperGemetric test),
+\item{enrich_kegg}{One of "HGT"(HyperGemetric test), "ORT"(Over-Representing Test), "DAVID" and "GOstats",
 specifying enrichment method used for kegg enrichment analysis.}
 
 \item{gsea}{Boolean, indicating whether GSEA analysis is needed for positive and
@@ -84,16 +83,9 @@ The downstream analysis includes identifying essential, non-essential, and targe
 and performing biological functional category analysis and pathway enrichment analysis of these genes.
 The function also visualizes genes in the context of pathways to benefit users exploring screening data.
 }
-\note{
-See the vignette for an example of FluteMLE
-The source can be found by typing \code{MAGeCKFlute:::FluteMLE}
-or \code{getMethod("FluteMLE")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/FluteMLE.R}
-Users should find it easy to customize this function.
-}
 \examples{
+data(MLE_Data)
 \dontrun{
-  data(MLE_Data)
   # functional analysis for MAGeCK MLE results
   FluteMLE(MLE_Data, ctrlname=c("D7_R1","D7_R2"), treatname=c("PLX7_R1","PLX7_R2"),
            prefix="BRAF_D7", pvalueCutoff=0.05, organism="hsa")

@@ -9,7 +9,7 @@
 #' @rdname NormalizeBeta
 #' @aliases normalizebeta
 #'
-#' @param beta Data frame, which has columns of 'ENTREZID', and \code{samples}.
+#' @param beta Data frame, in which rows are EntrezID, columns are samples.
 #' @param samples Character vector, specifying the samples in \code{beta} to be normalized.
 #' If NULL (default), normalize beta score of all samples in \code{beta}.
 #' @param method Character, one of 'cell_cycle'(default) and 'loess'.
@@ -29,19 +29,14 @@
 #'
 #' @author Wubing Zhang
 #'
-#' @note See the vignette for an example of NormalizeBeta.
-#' Note that the source code of \code{NormalizeBeta} is very simple.
-#' The source can be found by typing \code{MAGeCKFlute:::NormalizeBeta}
-#' or \code{getMethod("NormalizeBeta")}, or
-#' browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/NormalizeBeta.R}
-#' Users should find it easy to customize this function.
-#'
-#'
 #' @examples
 #' data(MLE_Data)
 #' # Read beta score from gene summary table in MAGeCK MLE results
 #' dd = ReadBeta(MLE_Data, organism="hsa")
-#' samples=colnames(dd)[3:6]
+#' tmp = TransGeneID(rownames(dd), "Symbol", "Entrez")
+#' dd = dd[!(duplicated(tmp)|is.na(tmp)), ]
+#' rownames(dd) = tmp[!(duplicated(tmp)|is.na(tmp))]
+#' samples=c("D7_R1", "D7_R2", "PLX7_R1", "PLX7_R2")
 #' #Cell Cycle normalization
 #' dd_essential = NormalizeBeta(dd, samples=samples, method="cell_cycle")
 #' head(dd_essential)
@@ -54,9 +49,9 @@
 #' @export
 
 #===normalize function=====================================
-NormalizeBeta <- function(beta, samples=NULL, method="cell_cycle", posControl=NULL, minus=0){
-  loginfo("Normalize beta scores ...")
-  if(is.null(samples)) samples = setdiff(colnames(beta), "ENTREZID")
+NormalizeBeta <- function(beta, samples=NULL, method="cell_cycle", posControl=NULL, minus=0.2){
+  message(Sys.time(), " # Normalize beta scores ...")
+  if(is.null(samples)) samples = setdiff(colnames(beta))
 
   if(method=="cell_cycle"){
     if(!is.null(posControl) && class(posControl)=="character" && file.exists(posControl)[1]){
@@ -66,7 +61,7 @@ NormalizeBeta <- function(beta, samples=NULL, method="cell_cycle", posControl=NU
       data(Zuber_Essential)
       posControl=Zuber_Essential
     }
-    idx = which(as.numeric(beta$ENTREZID) %in% as.numeric(posControl$EntrezID))
+    idx = which(rownames(beta) %in% posControl$EntrezID)
     normalized = as.matrix(beta[,samples])
     mid = apply(normalized[idx,], 2, median)
     mid = abs(mid - minus)
@@ -111,12 +106,12 @@ NormalizeBeta <- function(beta, samples=NULL, method="cell_cycle", posControl=NU
 #'
 #' @examples
 #' beta = ReadBeta(MLE_Data, organism="hsa")
-#' beta_loess = normalize.loess(beta[,3:6])
+#' beta_loess = normalize.loess(beta[,c("D7_R1", "D7_R2", "PLX7_R1", "PLX7_R2")])
 #'
 #' @export
 #'
 normalize.loess <- function(mat, subset=sample(1:(dim(mat)[1]), min(c(5000, nrow(mat)))),
-                            epsilon=10^-2, maxit=1, log.it=TRUE, verbose=TRUE, span=2/3,
+                            epsilon=10^-2, maxit=1, log.it=FALSE, verbose=TRUE, span=2/3,
                             family.loess="symmetric", ...){
 
   J <- dim(mat)[2]

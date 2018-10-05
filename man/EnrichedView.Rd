@@ -7,7 +7,7 @@
 \title{View enriched terms}
 \usage{
 EnrichedView(enrichment, plotTitle = NULL, color = "#3f90f7",
-  termNum = 20, charLength = 40, filename = NULL, width = 5,
+  termNum = 15, charLength = 40, filename = NULL, width = 5,
   height = 4, ...)
 }
 \arguments{
@@ -36,20 +36,11 @@ An object created by \code{ggplot}, which can be assigned and further customized
 \description{
 Grid plot for enriched terms
 }
-\note{
-See the vignette for an example of EnrichedView
-The source can be found by typing \code{MAGeCKFlute:::EnrichedView}
-or \code{getMethod("EnrichedView")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/EnrichedView.R}
-Users should find it easy to customize this function.
-}
 \examples{
-data(MLE_Data)
-universe = TransGeneID(MLE_Data$Gene, "SYMBOL", "ENTREZID", organism = "hsa")
-genes = universe[1:50]
-enrichRes <- enrich.HGT(genes, universe)
-EnrichedView(enrichment=enrichRes@result, plotTitle = "Hypergemetric test")
-
+data(geneList, package = "DOSE")
+genes <- names(geneList)[1:100]
+enrichRes <- enrich.HGT(genes)
+EnrichedView(enrichment=enrichRes@result)
 
 }
 \seealso{

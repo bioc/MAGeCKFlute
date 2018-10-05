@@ -6,7 +6,7 @@
 #' @name DensityView
 #' @rdname DensityView
 #'
-#' @param beta Data frame, including all \code{samples} as columns.
+#' @param beta Data frame, including \code{samples} as columns.
 #' @param samples Character, specifying sample names in \code{beta}.
 #' @param main As in 'plot'.
 #' @param xlab As in 'plot'.
@@ -20,13 +20,6 @@
 #'
 #' @author Wubing Zhang
 #'
-#' @note See the vignette for an example of density plot for beta score deviation.
-#' Note that the source code of \code{DensityView} is very simple.
-#' The source can be found by typing \code{MAGeCKFlute:::DensityView}
-#' or \code{getMethod("DensityView")}, or
-#' browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/DensityView.R}
-#' Users should find it easy to customize this function.
-#'
 #' @seealso \code{\link{ViolinView}}
 #'
 #' @examples
@@ -35,19 +28,22 @@
 #' dd = ReadBeta(MLE_Data, organism="hsa")
 #' DensityView(dd, samples=c("D7_R1", "D7_R2", "PLX7_R1", "PLX7_R2"))
 #' #or
-#' DensityView(dd[, 3:6])
+#' DensityView(dd[, c("D7_R1", "D7_R2", "PLX7_R1", "PLX7_R2")])
 #'
-#' @importFrom reshape melt
+#' @importFrom data.table melt
 #' @importFrom ggsci scale_color_npg
 #'
 #' @export
 
 #===Distribution of beta scores======================================
-DensityView <- function(beta, samples=NULL, main=NULL,xlab="Beta Score",filename=NULL, width=5, height =4, ...){
-  dd1 = beta
-  loginfo(paste("Density plot for", main, xlab, "..."))
-  if(!is.null(samples) && length(samples)>1){ dd1 = dd1[, samples]}
-  dd1 = melt(dd1,id=NULL)
+DensityView <- function(beta, samples = NULL, main = NULL,xlab = "Beta Score",
+                        filename = NULL, width = 5, height = 4, ...){
+  message(Sys.time(), " # Density plot for ", main, " ", xlab, " ...")
+  if(!is.null(samples) && length(samples)>1){ beta = beta[, samples]}
+  dd1 = data.table::melt(beta,id=NULL)
+  if(!"variable" %in% colnames(dd1)){
+    dd1$variable = colnames(beta)
+  }
   #==========
   p=ggplot(data=dd1,aes(x=value,color=variable,group=variable))
   p=p+geom_density()
@@ -62,10 +58,11 @@ DensityView <- function(beta, samples=NULL, main=NULL,xlab="Beta Score",filename
                 axis.text = element_text(colour="gray10"))
   p = p + theme(axis.line = element_line(size=0.5, colour = "black"),
                 panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                panel.border = element_blank(), panel.background = element_blank())
+                panel.border = element_blank(), panel.background = element_blank(),
+                legend.key = element_rect(fill = "transparent"))
 
   if(!is.null(filename)){
-    ggsave(plot=p, filename=filename, units = "in", dpi=600, width=width, height=height, ...)
+    ggsave(plot=p, filename=filename, units = "in", width=width, height=height, ...)
   }
   return(p)
 }

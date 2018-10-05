@@ -6,16 +6,13 @@
 \alias{enrichgseview}
 \title{View enriched terms in GSEA}
 \usage{
-EnrichedGSEView(enrichment, plotTitle = NULL, color = "#3f90f7",
-  termNum = 20, charLength = 40, filename = NULL, width = 5,
-  height = 4, ...)
+EnrichedGSEView(enrichment, plotTitle = NULL, termNum = 15,
+  charLength = 40, filename = NULL, width = 5, height = 4, ...)
 }
 \arguments{
 \item{enrichment}{A data frame of enrichment result, with columns of ID, Description, p.adjust and NES}
 
 \item{plotTitle}{Same as 'title' in 'plot'.}
-
-\item{color}{Color of nodes}
 
 \item{termNum}{Integer, specifying number of top enriched terms to show}
 
@@ -36,23 +33,12 @@ An object created by \code{ggplot}, which can be assigned and further customized
 \description{
 Grid plot for enriched terms in GSEA
 }
-\note{
-See the vignette for an example of EnrichedGSEView
-The source can be found by typing \code{MAGeCKFlute:::EnrichedGSEView}
-or \code{getMethod("EnrichedGSEView")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/EnrichedGSEView.R}
-Users should find it easy to customize this function.
-}
 \examples{
-data(MLE_Data)
-universe = TransGeneID(MLE_Data$Gene, "SYMBOL", "ENTREZID", organism = "hsa")
-geneList = MLE_Data$D7_R1.beta
-names(geneList) = universe
-geneList = geneList[!is.na(universe)]
-enrichRes = enrich.GSE(geneList, type = "KEGG", organism="hsa")
-EnrichedGSEView(enrichRes@result, plotTitle = "GSEA Analysis")
-
-
+\dontrun{
+    data(geneList, package = "DOSE")
+    enrichRes = enrich.GSE(geneList, type = "KEGG", organism="hsa")
+    EnrichedGSEView(enrichRes@result, plotTitle = "GSEA Analysis")
+}
 
 }
 \seealso{

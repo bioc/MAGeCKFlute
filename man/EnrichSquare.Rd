@@ -5,12 +5,12 @@
 \alias{EnrichSquare}
 \title{Enrichment analysis for selected treatment related genes}
 \usage{
-EnrichSquare(beta, pvalue = 1, enrich_method = "ORT", organism = "hsa",
-  adjust = "BH", filename = NULL, out.dir = ".", width = 5,
+EnrichSquare(beta, pvalue = 0.05, enrich_method = "ORT", organism = "hsa",
+  adjust = "BH", filename = NULL, out.dir = ".", width = 6.5,
   height = 4, ...)
 }
 \arguments{
-\item{beta}{Data frame, which has columns of 'ENTREZID' and 'group'.}
+\item{beta}{Data frame, which contains column of 'group'.}
 
 \item{pvalue}{Pvalue cutoff.}
 
@@ -40,7 +40,6 @@ A list containing enrichment results for each group genes. This list contains se
 \item{kegg14}{a list record enriched KEGG pathways for Group1&Group4 genes in 9-Square}
 \item{kegg23}{a list record enriched KEGG pathways for Group2&Group3 genes in 9-Square}
 \item{kegg24}{a list record enriched KEGG pathways for Group2&Group4 genes in 9-Square}
-\item{kegg1234}{a list record enriched KEGG pathways for Group1&Group2&Group3&Group4 genes in 9-Square}
 \item{bp1}{a list record enriched GO BP terms for Group1 genes in 9-Square}
 \item{bp2}{a list record enriched GO BP terms for Group2 genes in 9-Square}
 \item{bp3}{a list record enriched GO BP terms for Group3 genes in 9-Square}
@@ -49,20 +48,13 @@ A list containing enrichment results for each group genes. This list contains se
 \item{bp14}{a list record enriched GO BP terms for Group1&Group4 genes in 9-Square}
 \item{bp23}{a list record enriched GO BP terms for Group2&Group3 genes in 9-Square}
 \item{bp24}{a list record enriched GO BP terms for Group2&Group4 genes in 9-Square}
-\item{bp1234}{a list record enriched GO BP terms for Group1&Group2&Group3&Group4 genes in 9-Square}
+
 Each item in the returned list has two sub items:
 \item{gridPlot}{an object created by \code{ggplot}, which can be assigned and further customized.}
 \item{enrichRes}{a enrichResult instance.}
 }
 \description{
 Do enrichment analysis for selected treatment related genes in 9-squares
-}
-\note{
-See the vignette for an example of EnrichSquare
-The source can be found by typing \code{MAGeCKFlute:::EnrichSquare}
-or \code{getMethod("EnrichSquare")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/EnrichSquare.R}
-Users should find it easy to customize this function.
 }
 \seealso{
 \code{\link{SquareView}}

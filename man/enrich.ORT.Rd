@@ -7,8 +7,8 @@
 \title{Do enrichment analysis using over-representation test}
 \usage{
 enrich.ORT(gene, universe = NULL, type = "KEGG", organism = "hsa",
-  pvalueCutoff = 1, qvalueCutoff = 1, pAdjustMethod = "BH",
-  minGSSize = 2, maxGSSize = 500)
+  pvalueCutoff = 0.25, qvalueCutoff = 0.2, pAdjustMethod = "BH",
+  minGSSize = 2, maxGSSize = 50)
 }
 \arguments{
 \item{gene}{A character vector, specifying the genelist to do enrichment analysis.}
@@ -35,20 +35,11 @@ A enrichResult instance.
 \description{
 Do enrichment analysis using over-representation test
 }
-\note{
-See the vignette for an example of enrichment analysis using over-representation test
-The source can be found by typing \code{MAGeCKFlute:::enrich.ORT}
-or \code{getMethod("enrich.ORT")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/enrich.ORT.R}
-Users should find it easy to customize this function.
-}
 \examples{
-data(MLE_Data)
-universe = TransGeneID(MLE_Data$Gene, "SYMBOL", "ENTREZID", organism = "hsa")
-genes = universe[1:50]
-enrichRes <- enrich.ORT(genes, universe)
+data(geneList, package = "DOSE")
+genes <- names(geneList)[1:100]
+enrichRes <- enrich.ORT(genes)
 head(enrichRes@result)
-
 
 }
 \seealso{

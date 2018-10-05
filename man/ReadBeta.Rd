@@ -16,16 +16,10 @@ the gene annotation package. For all potential values check: data(bods); bods. D
 and can also be "human" (case insensitive).}
 }
 \value{
-A data frame including four columns, named "Gene", "Control", "Treatment", and "ENTREZID".
+A data frame, in which the first column is ENTREZID, and the later columns are beta score for each samples.
 }
 \description{
 Read gene beta scores from file or data frame
-}
-\note{
-The source can be found by typing \code{MAGeCKFlute:::ReadBeta}
-or \code{getMethod("ReadBeta")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/ReadBeta.R}
-Users should find it easy to customize this function.
 }
 \examples{
 data(MLE_Data)

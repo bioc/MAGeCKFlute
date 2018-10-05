@@ -24,12 +24,6 @@
 #'
 #' @author Wubing Zhang
 #'
-#' @note See the vignette for an example of ScatterView.
-#' Note that the source code of \code{ScatterView} is very simple.
-#' The source can be found by typing \code{MAGeCKFlute:::ScatterView}
-#' or \code{getMethod("ScatterView")}, or
-#' browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/ScatterView.R}
-#' Users should find it easy to customize this function.
 #'
 #' @seealso \code{\link{SquareView}}
 #'
@@ -56,7 +50,7 @@ ScatterView <- function(beta, ctrlname="Control",treatname="Treatment", scale_cu
   beta$group[beta$diff<(-intercept)]="down"
 
   data=beta
-  loginfo(paste("Scatter plot of", main, "Treat-Ctrl beta scores ..."))
+  message(Sys.time(), " # Scatter plot of ", main, " Treat-Ctrl beta scores ...")
   mycolour=c("no"="aliceblue",  "up"="#e41a1c","down"="#377eb8")
   xmin=min(data$Control)
   xmax=max(data$Control)
@@ -84,7 +78,7 @@ ScatterView <- function(beta, ctrlname="Control",treatname="Treatment", scale_cu
   if(!is.null(filename)){
     write.table(beta, file.path(dirname(filename), paste0("GroupAB_", main, ".txt")),
                 sep = "\t", quote = FALSE, row.names = FALSE)
-    ggsave(plot=p,filename=filename,units = "in", dpi=600, width=width, height =height, ...)
+    ggsave(plot=p,filename=filename,units = "in", width=width, height =height, ...)
   }
   return(p)
 }

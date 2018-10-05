@@ -10,7 +10,7 @@ ViolinView(beta, samples = NULL, main = NULL, ylab = "Beta Score",
   filename = NULL, width = 5, height = 4, ...)
 }
 \arguments{
-\item{beta}{Data frame, , including all \code{samples} as columns.}
+\item{beta}{Data frame, , including \code{samples} as columns.}
 
 \item{samples}{Character, specifying the name of samples to be compared.}
 
@@ -33,21 +33,13 @@ An object created by \code{ggplot}, which can be assigned and further customized
 \description{
 Plots the violin of beta scores in Control and Treatment samples.
 }
-\note{
-See the vignette for an example of density plot for beta score deviation.
-Note that the source code of \code{ViolinView} is very simple.
-The source can be found by typing \code{MAGeCKFlute:::ViolinView}
-or \code{getMethod("ViolinView")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/ViolinView.R}
-Users should find it easy to customize this function.
-}
 \examples{
 data(MLE_Data)
 # Read beta score from gene summary table in MAGeCK MLE results
 dd = ReadBeta(MLE_Data, organism="hsa")
 ViolinView(dd, samples=c("D7_R1", "D7_R2", "PLX7_R1", "PLX7_R2"))
 #or
-ViolinView(dd[, 3:6])
+ViolinView(dd[, c("D7_R1", "D7_R2", "PLX7_R1", "PLX7_R2")])
 
 
 }

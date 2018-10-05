@@ -8,7 +8,7 @@
 \usage{
 enrich.DAVID(gene, universe = NULL, david.user, idType = "ENTREZ_GENE_ID",
   minGSSize = 2, maxGSSize = 500, annotation = "GOTERM_BP_FAT",
-  pvalueCutoff = 1, pAdjustMethod = "BH", qvalueCutoff = 0.2)
+  pvalueCutoff = 0.25, pAdjustMethod = "BH", qvalueCutoff = 0.2)
 }
 \arguments{
 \item{gene}{Character vector, specifying the genelist to do enrichment analysis.}
@@ -37,24 +37,14 @@ A enrichResult instance.
 \description{
 an update version of DAVIDWebService to do enrichment analysis
 }
-\note{
-This function depends on network and DAVID account, so don't show in the vignette.
-The source can be found by typing \code{MAGeCKFlute:::enrich.DAVID}
-or \code{getMethod("enrich.DAVID")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/enrich.DAVID.R}
-Users should find it easy to customize this function.
-}
 \examples{
+data(geneList, package = "DOSE")
+genes <- names(geneList)[1:100]
 \dontrun{
- data(MLE_Data)
- universe = TransGeneID(MLE_Data$Gene, "SYMBOL", "ENTREZID", organism = "hsa")
- genes = universe[1:50]
 	# Before running this example, you need to have a david account.
-	enrichRes <- enrich.DAVID(genes, universe, david.user="david.user@edu.com")
+	enrichRes <- enrich.DAVID(genes, david.user="david.user@edu.com")
 	head(enrichRes@result)
 }
-
-
 }
 \seealso{
 \code{\link{enrich.HGT}}

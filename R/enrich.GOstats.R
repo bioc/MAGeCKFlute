@@ -18,12 +18,6 @@
 #'
 #' @author Wubing Zhang
 #'
-#' @note  See the vignette for an example of enrichment analysis using GOstats.
-#' The source can be found by typing \code{MAGeCKFlute:::enrich.GOstats}
-#' or \code{getMethod("enrich.GOstats")}, or
-#' browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/enrich.GOstats.R}
-#' Users should find it easy to customize this function.
-#'
 #' @seealso \code{\link{enrich.HGT}}
 #' @seealso \code{\link{enrich.DAVID}}
 #' @seealso \code{\link{enrich.GSE}}
@@ -32,19 +26,21 @@
 #' @seealso \code{\link[DOSE]{enrichResult-class}}
 #'
 #' @examples
-#' data(MLE_Data)
-#' universe = TransGeneID(MLE_Data$Gene, "SYMBOL", "ENTREZID", organism = "hsa")
-#' genes = universe[1:50]
-#' enrichRes <- enrich.GOstats(genes, universe, type="BP")
-#' head(enrichRes@result)
+#' data(geneList, package = "DOSE")
+#' genes <- names(geneList)[1:100]
+#' \dontrun{
+#'     enrichRes <- enrich.GOstats(genes, type="BP")
+#'     head(enrichRes@result)
+#' }
 #'
 #' @import GOstats Category
+#' @import DOSE
 #'
 #' @export
 
 
 enrich.GOstats <- function(gene, universe=NULL, type=c("KEGG", "BP", "MF", "CC"), organism = "hsa",
-                           pvalueCutoff = 1, pAdjustMethod = "BH"){
+                           pvalueCutoff = 0.25, pAdjustMethod = "BH"){
   requireNamespace("GOstats", quietly = TRUE)
   requireNamespace("Category", quietly = TRUE)
   gene = unique(as.character(gene))
@@ -55,12 +51,9 @@ enrich.GOstats <- function(gene, universe=NULL, type=c("KEGG", "BP", "MF", "CC")
   orgdb = getOrg(organism)$pkg
   #========
   if(DS == "KEGG"){
-    loginfo('Running KEGG for list of entrezIDs')
     params <- new("KEGGHyperGParams", categoryName="KEGG", geneIds=gene, universeGeneIds=universe,
                   annotation=orgdb, pvalueCutoff=pvalueCutoff,testDirection="over")
-    #loginfo('    Starting HyperG test')
     over <- hyperGTest(params)
-    #loginfo('    HyperG test done')
     over.sum <- summary(over)
 #
 #     glist <- geneIdsByCategory(over)
@@ -76,7 +69,6 @@ enrich.GOstats <- function(gene, universe=NULL, type=c("KEGG", "BP", "MF", "CC")
 
   if(DS %in% c("BP", "CC", "MF")){
     # gene ontology background
-    loginfo(paste('Running GO', DS, 'for list of entrezIDs'))
     params <- new("GOHyperGParams", annotation=orgdb,
                   geneIds = gene, universeGeneIds = universe,
                   ontology=DS, pvalueCutoff=pvalueCutoff, testDirection="over")
@@ -96,8 +88,9 @@ enrich.GOstats <- function(gene, universe=NULL, type=c("KEGG", "BP", "MF", "CC")
     })
     over.sum$geneID <- glist[as.character(over.sum[,1])]
     geneID = strsplit(over.sum$geneID, "/")
+    allsymbol = TransGeneID(gene, "Entrez", "Symbol", organism = organism)
     geneName = lapply(geneID, function(gid){
-      SYMBOL = TransGeneID(gid, "ENTREZID", "SYMBOL", organism = organism)
+      SYMBOL = allsymbol[gid]
       paste(SYMBOL, collapse = "/")
     })
     over.sum$geneName <- unlist(geneName)

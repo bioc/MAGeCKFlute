@@ -8,9 +8,10 @@
 #' @rdname SquareView
 #' @aliases squareview
 #'
-#' @param beta Data frame, including columns of 'Gene', \code{ctrlname} and \code{treatname}.
+#' @param beta Data frame, including columns of \code{ctrlname} and \code{treatname}, with Gene Symbol as rowname.
 #' @param ctrlname A character, specifying the names of control samples.
 #' @param treatname A character, specifying the name of treatment samples.
+#' @param label An integer or a character specifying the column used as the label, default value is 0 (row names).
 #' @param label.top Boolean, whether label the top selected genes, default label the top 10 genes in each group.
 #' @param top Integer, specifying the number of top selected genes to be labeled. Default is 5.
 #' @param genelist Character vector, specifying labeled genes.
@@ -26,13 +27,6 @@
 #' @return An object created by \code{ggplot}, which can be assigned and further customized.
 #'
 #' @author Wubing Zhang
-#'
-#' @note See the vignette for an example of SquareView.
-#' Note that the source code of \code{SquareView} is very simple.
-#' The source can be found by typing \code{MAGeCKFlute:::SquareView}
-#' or \code{getMethod("SquareView")}, or
-#' browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/SquareView.R}
-#' Users should find it easy to customize this function.
 #'
 #' @seealso \code{\link{ScatterView}}
 #'
@@ -50,12 +44,19 @@
 #'
 
 #Plot square
-SquareView<-function(beta, ctrlname="Control",treatname="Treatment", label.top = TRUE, top=5, genelist=c(),
+SquareView<-function(beta, ctrlname="Control",treatname="Treatment", label = 0, label.top = TRUE, top=5, genelist=c(),
                      scale_cutoff=1, main=NULL, filename=NULL, width=5, height=4, ...){
   requireNamespace("ggExtra", quietly=TRUE) || stop("need ggExtra package")
   requireNamespace("ggrepel", quietly=TRUE) || stop("need ggrepel package")
 
-  loginfo(paste("Square plot for",main, "beta scores ..."))
+  message(Sys.time(), " # Square plot for ", main, " beta scores ...")
+  if(!all(c(ctrlname, treatname) %in% colnames(beta))){
+    stop("No sample found in the data.")
+  }
+  if(label==0)
+    beta$Gene = rownames(beta)
+  else
+    beta$Gene = beta[, label]
   beta$group="Others"
   beta$text = beta$Gene
   beta$Control = rowMeans(beta[, ctrlname, drop= FALSE])
@@ -108,7 +109,7 @@ SquareView<-function(beta, ctrlname="Control",treatname="Treatment", label.top =
   gg$group=factor(gg$group,levels = c("Group1","Group2","Group3","Group4","Others"))
   #===============
   # gg=gg[,c("Gene","Treatment","Control","group","ENTREZID")]
-  mycolour=c("Others"="aliceblue",  "Group2"="#ff7f00", "Group3"="SlateBlue",
+  mycolour=c("Others"="aliceblue",  "Group2"="#ff7f00", "Group3"="#005CB7",
              "Group4"="#984ea3", "Group1"="#4daf4a" )
   # mycolour=c("Others"="aliceblue",  "Group2"="#DDA76A", "Group3"="#B5C27B",
   #            "Group4"="#AD6A64", "Group1"="#7995C2" )
@@ -154,14 +155,14 @@ SquareView<-function(beta, ctrlname="Control",treatname="Treatment", label.top =
                 panel.border = element_blank(), panel.background = element_blank())
   p=p+theme(legend.position="none")+theme(legend.title=element_blank())
 
-  p=suppressWarnings(ggExtra::ggMarginal(p, type="histogram",bins=50))
-  p$data = gg
+  p=suppressWarnings(ggExtra::ggMarginal(p, type="histogram", bins=50, fill = "gray80"))
+  p$data = beta
   p$data = p$data[order(p$data$group),]
   # grid.arrange(p,ncol = 1)
   if(!is.null(filename)){
       write.table(p$data, gsub("\\....$", ".txt", filename),
                 sep = "\t", quote = FALSE, row.names = FALSE)
-      ggsave(filename, p, units="in", dpi=600, width=width, height=height, ...)
+      ggsave(filename, p, units="in", width=width, height=height, ...)
   }
   return(p)
 }

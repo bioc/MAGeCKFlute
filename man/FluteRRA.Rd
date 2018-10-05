@@ -6,7 +6,7 @@
 \alias{RRApipeline}
 \title{Downstream analysis based on MAGeCK-RRA result}
 \usage{
-FluteRRA(gene_summary, prefix = "Test", enrich_kegg = "ORT",
+FluteRRA(gene_summary, prefix = "Test", enrich_kegg = "HGT",
   organism = "hsa", pvalueCutoff = 0.25, adjust = "BH", outdir = ".")
 }
 \arguments{
@@ -14,8 +14,8 @@ FluteRRA(gene_summary, prefix = "Test", enrich_kegg = "ORT",
 
 \item{prefix}{A character, indicating the prefix of output file name.}
 
-\item{enrich_kegg}{One of "ORT"(Over-Representing Test), "GSEA"(Gene Set Enrichment Analysis), "DAVID",
-"GOstats", and "HGT"(HyperGemetric test), or index from 1 to 5, specifying enrichment method used for kegg enrichment analysis.}
+\item{enrich_kegg}{One of "HGT"(HyperGemetric test), "ORT"(Over-Representing Test), "DAVID" and "GOstats",
+specifying enrichment method used for kegg enrichment analysis.}
 
 \item{organism}{A character, specifying organism, such as "hsa" or "Human"(default),
 and "mmu" or "Mouse"}
@@ -44,19 +44,12 @@ and negatively selected can be identified based on the p-value or FDR.
 The downstream analysis of this function includes identifying positive and negative selection genes,
 and performing biological functional category analysis and pathway enrichment analysis of these genes.
 }
-\note{
-See the vignette for an example of FluteRRA
-The source can be found by typing \code{MAGeCKFlute:::FluteRRA}
-or \code{getMethod("FluteRRA")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/FluteRRA.R}
-Users should find it easy to customize this function.
-}
 \examples{
-\dontrun{
 data(RRA_Data)
 gene_summary = RRA_Data
-# Run the FluteRRA pipeline
-FluteRRA(gene_summary, prefix="BRAF", organism="hsa")
+\dontrun{
+    # Run the FluteRRA pipeline
+    FluteRRA(gene_summary, prefix="BRAF", organism="hsa")
 }
 
 

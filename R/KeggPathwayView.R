@@ -226,10 +226,10 @@ KeggPathwayView=function (gene.data = NULL, cpd.data = NULL, pathway.id,
     msg.fmt = "Only KEGG ortholog gene ID is supported,
       make sure it looks like \"%s\"!"
     msg = sprintf(msg.fmt, species.data["kegg.geneid"])
-    loginfo(paste0("    Note: ", msg))
+    message(Sys.time(), " # Note: ", msg)
   }
   if (length(dim(species.data)) == 2) {
-    loginfo(paste0("    Note: ", "More than two valide species!"))
+    message(Sys.time(), " # Note: More than two valide species!")
     species.data = species.data[1, ]
   }
   species = species.data["kegg.code"]
@@ -239,7 +239,7 @@ KeggPathwayView=function (gene.data = NULL, cpd.data = NULL, pathway.id,
       msg.fmt = "Only native KEGG gene ID is supported for this species,
       \nmake sure it looks like \"%s\"!"
       msg = sprintf(msg.fmt, species.data["kegg.geneid"])
-      loginfo(paste0("    Note: ", msg))
+      message(Sys.time(), " #  Note: ", msg)
     }else {
       stop("This species is not annotated in KEGG!")
     }
@@ -257,9 +257,9 @@ KeggPathwayView=function (gene.data = NULL, cpd.data = NULL, pathway.id,
     gene.idtype = "ENTREZ"
   }
   if (gene.idtype == "ENTREZ" & !entrez.gnodes & !is.null(gene.data)) {
-    loginfo("    Info: Getting gene ID data from KEGG...")
+    message(Sys.time(), " #  Info: Getting gene ID data from KEGG...")
     gene.idmap = keggConv("ncbi-geneid", species)
-    loginfo("    Info: Done with data retrieval!")
+    message(Sys.time(), " #  Info: Done with data retrieval!")
     kegg.ids = gsub(paste(species, ":", sep = ""), "", names(gene.idmap))
     ncbi.ids = gsub("ncbi-geneid:", "", gene.idmap)
     gene.idmap = cbind(ncbi.ids, kegg.ids)
@@ -375,7 +375,7 @@ KeggPathwayView=function (gene.data = NULL, cpd.data = NULL, pathway.id,
         }else {
           #=====My revised===========
           plot.data.gene$labels = TransGeneID(as.character(
-            plot.data.gene$kegg.names),"ENTREZID", "SYMBOL", organism = species)[as.character(plot.data.gene$kegg.names)]
+            plot.data.gene$kegg.names),"Entrez", "Symbol", organism = species)[as.character(plot.data.gene$kegg.names)]
           #==========================
           mapped.gnodes = rownames(plot.data.gene)
           node.data$labels[mapped.gnodes] = plot.data.gene$labels
@@ -501,15 +501,18 @@ KeggPathwayView=function (gene.data = NULL, cpd.data = NULL, pathway.id,
 #' \dontrun{
 #'   data(MLE_Data)
 #'   # Read beta score from gene summary table in MAGeCK MLE results
-#'   dd = ReadBeta(MLE_Data, ctrlName = "D7_R1", treatName = "PLX7_R1", organism="hsa")
-#'   arrangePathview(dd, pathways_hsa$PathwayID[1:2], title=NULL, sub=NULL, organism="hsa")
+#'   dd = ReadBeta(MLE_Data, organism="hsa")
+#'   tmp = TransGeneID(rownames(dd), "Symbol", "Entrez", organism = "hsa")
+#'   idx = is.na(tmp) | duplicated(tmp)
+#'   dd = dd[!idx,]
+#'   rownames(dd) = tmp[!idx]
+#'   dd$Control = rowMeans(dd[, 1:2])
+#'   dd$Treatment = rowMeans(dd[, 3:4])
+#'   arrangePathview(dd, "hsa00534", title=NULL, sub=NULL, organism="hsa")
 #' }
 #'
 #' @importFrom png readPNG
 #' @importFrom grid grid.raster
-
-
-
 
 arrangePathview <- function(genelist, pathways=c(), organism='hsa', view_allpath= FALSE,
                         title="Group A", sub="Negative control normalized",
@@ -531,11 +534,7 @@ arrangePathview <- function(genelist, pathways=c(), organism='hsa', view_allpath
     keggID=pathways[1:4]
   }
 
-  loginfo(paste('Starting plot kegg pathways for',sub, title))
-  idx=duplicated(genelist$ENTREZID)
-  genelist=genelist[!idx,]
-  rownames(genelist)=genelist$ENTREZID
-
+  message(Sys.time(), " # Starting plot kegg pathways for ", sub, title)
 
   p1 <- KeggPathwayView(gene.data  = genelist[,c("Control","Treatment")], pathway.id = keggID,
                         species=organism, kegg.dir = path.archive, kegg.native = kegg.native)
@@ -546,7 +545,7 @@ arrangePathview <- function(genelist, pathways=c(), organism='hsa', view_allpath
   allpngnames=allpngnames[idx]
 
   if(length(allpngnames)>0){
-    toFile=paste0(output,"/",title,"_",sub,"_",allpngnames)
+    toFile=file.path(output, paste0(title,"_",sub,"_",allpngnames))
     boo=file.rename(from=allpngnames,to=toFile)
   }else{boo=FALSE}
   originPng=paste0(keggID, ".png")
@@ -557,7 +556,7 @@ arrangePathview <- function(genelist, pathways=c(), organism='hsa', view_allpath
   suppressWarnings(file.remove(failMulti))
 
   if(all(boo)){
-    pngnames = paste0(output,"/",title,"_",sub,"_",allpngnames)
+    pngnames = file.path(output, paste0(title,"_",sub,"_",allpngnames))
     idx=file.exists(pngnames)
     pngnames = pngnames[idx]
   }else{pngnames=c()}
@@ -568,15 +567,15 @@ arrangePathview <- function(genelist, pathways=c(), organism='hsa', view_allpath
   }else
     thePlots = list()
 
-  if(length(thePlots)<4){
-    for(i in (length(thePlots)+1):4){
-      p1=ggplot()
-      p1=p1+geom_text(aes(x=0,y=0,label="No multi pathview figures"),size=6)
-      p1=p1+theme_void()
-      thePlots[[i]]=p1
-    }
+  if(length(thePlots)==1){
+    do.call(grid.arrange, c(thePlots, ncol = 1, top=title, bottom=sub))
+  }else if(length(thePlots)==2){
+    do.call(grid.arrange, c(thePlots[1:2], ncol = 2, top=title, bottom=sub))
+  }else if(length(thePlots)==3){
+    do.call(grid.arrange, c(thePlots[1], ncol = 1, top=title, bottom=sub))
+    do.call(grid.arrange, c(thePlots[2:3], ncol = 2, top=title, bottom=sub))
+  }else if(length(thePlots)==4){
+    do.call(grid.arrange, c(thePlots[1:2], ncol = 2, top=title, bottom=sub))
+    do.call(grid.arrange, c(thePlots[3:4], ncol = 2, top=title, bottom=sub))
   }
-  do.call(grid.arrange, c(thePlots[1:2], ncol = 2,top=title,bottom=sub))
-  do.call(grid.arrange, c(thePlots[3:4], ncol = 2,top=title,bottom=sub))
-  # grid.arrange(thePlots, ncol = 2, top=title0)
 }

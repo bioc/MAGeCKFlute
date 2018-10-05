@@ -7,7 +7,7 @@
 \usage{
 MAView(beta, ctrlname = "Control", treatname = "Treatment", main = NULL,
   show.statistics = TRUE, add.smooth = TRUE, lty = 1,
-  smooth.col = "red", plot.method = c("auto", "lm", "glm", "gam", "loess"),
+  smooth.col = "red", plot.method = c("loess", "lm", "glm", "gam"),
   filename = NULL, width = 5, height = 4, ...)
 }
 \arguments{
@@ -27,7 +27,7 @@ MAView(beta, ctrlname = "Control", treatname = "Treatment", main = NULL,
 
 \item{smooth.col}{Color of smooth line.}
 
-\item{plot.method}{A string specifying the method to fit smooth line, which should be one of "auto", "lm", "glm", "gam", and "loess".}
+\item{plot.method}{A string specifying the method to fit smooth line, which should be one of "loess" (default), "lm", "glm" and "gam".}
 
 \item{filename}{Figure file name to create on disk. Default filename="NULL", which means
 don't save the figure on disk.}
@@ -39,18 +39,10 @@ don't save the figure on disk.}
 \item{...}{Other available parameters in function 'ggsave'.}
 }
 \value{
-plot on current device
+An object created by \code{ggplot}, which can be assigned and further customized.
 }
 \description{
 MAplot of gene beta scores in Control vs Treatment
-}
-\note{
-See the vignette for an example of MAView.
-Note that the source code of \code{MAView} is very simple.
-The source can be found by typing \code{MAGeCKFlute:::MAView}
-or \code{getMethod("MAView")}, or
-browsed on github at \url{https://github.com/WubingZhang/MAGeCKFlute/tree/master/R/MAView.R}
-Users should find it easy to customize this function.
 }
 \examples{
 data(MLE_Data)
