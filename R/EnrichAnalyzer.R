@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' data(geneList, package = "DOSE")
-#' keggA = EnrichAnalyzer(geneList, method = "GSEA")
+#' keggA = EnrichAnalyzer(geneList[1:500], method = "HGT")
 #' head(keggA@result)
 #'
 #' @import DOSE
