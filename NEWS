@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.4.3
+-------------------------
+
+    o Remove bugs when perform enrichment analysis based on use-defined gene sets.
+    o Prioritize NormalizeBeta.
+    o Customize KEGG pathways (04***).
+
 CHANGES IN VERSION 1.4.1
 -------------------------
 

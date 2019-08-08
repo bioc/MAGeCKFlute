@@ -528,7 +528,7 @@ arrangePathview <- function(genelist, pathways=c(), top = 4, ncol = 2,
     keggID=pathways[1:top]
   }
 
-  message(Sys.time(), " # Starting plot kegg pathways for ", sub, title)
+  message(Sys.time(), " # Starting plot kegg pathways for ", sub, " ", title)
 
   p1 <- suppressWarnings(KeggPathwayView(gene.data  = genelist[,c("Control","Treatment")],
                         pathway.id = keggID, species=organism, kegg.dir = path.archive,

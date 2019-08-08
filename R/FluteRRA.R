@@ -12,7 +12,7 @@
 #' @param lfcCutoff A two-length vector (default: c(-1, 1)), specifying the logFC cutoff
 #' for negative selection and positive selection.
 #' @param organism "hsa" or "mmu".
-#' @param limit A two-length vector (default: c(3, 50)), specifying the minimal and
+#' @param limit A two-length vector (default: c(1, 120)), specifying the minimal and
 #' maximal size of gene sets for enrichent analysis.
 #' @param pvalueCutoff A numeric, specifying pvalue cutoff of enrichment analysis, default 1.
 #' @param prefix A character, indicating the prefix of output file name.
@@ -51,7 +51,7 @@
 FluteRRA <- function(gene_summary, sgrna_summary,
                      lfcCutoff = c(-1, 1),
                      organism = "hsa",
-                     limit = c(3, 50),
+                     limit = c(1, 120),
                      pvalueCutoff = 0.25,
                      prefix = "Test",
                      width = 12, height = 6,

@@ -15,7 +15,7 @@
 #' @param method One of "ORT"(Over-Representing Test), "GSEA"(Gene Set Enrichment Analysis), and "HGT"(HyperGemetric test).
 #' @param organism 'hsa' or 'mmu'.
 #' @param pvalueCutoff Pvalue cutoff.
-#' @param limit A two-length vector (default: c(3, 50)), specifying the minimal and
+#' @param limit A two-length vector (default: c(1, 120)), specifying the minimal and
 #' maximal size of gene sets for enrichent analysis.
 #' @param universe A character vector, specifying the backgound genelist, default is whole genome.
 #' @param filter Boolean, specifying whether filter out redundancies from the enrichment results.
@@ -39,11 +39,11 @@
 #' @export
 
 EnrichAnalyzer = function(geneList, keytype = "Entrez",
-                         type = "CORUM+GOBP+GOMF+GOCC+KEGG",
+                         type = "CORUM+KEGG",
                          method = "ORT",
                          organism = 'hsa',
                          pvalueCutoff = 0.25,
-                         limit = c(3, 80),
+                         limit = c(1, 120),
                          universe = NULL,
                          filter = TRUE,
                          gmtpath = NA){
@@ -54,7 +54,7 @@ EnrichAnalyzer = function(geneList, keytype = "Entrez",
   method = methods[toupper(method)]
 
   # Gene Set Enrichment Analysis
-  message(Sys.time(), " # Running enrichment analysis for ", type)
+  message(Sys.time(), " # Running ", type, " enrichment analysis")
   if(method == "GSEA"){
     enrichRes <- enrich.GSE(geneList, keytype = keytype, type = type,
                             organism = organism,
@@ -72,7 +72,7 @@ EnrichAnalyzer = function(geneList, keytype = "Entrez",
     stop("Avaliable methods: GSEA, ORT, and HGT. ")
   }
 
-  if(filter & nrow(enrichRes@result)>10){
+  if(!is.null(enrichRes) && nrow(enrichRes@result)>10 && filter){
     result = EnrichedFilter(enrichRes)
     result$p.adjust = p.adjust(result$pvalue, method = "BH")
     enrichRes@result = result[result$p.adjust<pvalueCutoff, ]

@@ -5,7 +5,7 @@
 \alias{ReadGMT}
 \title{ReadGMT}
 \usage{
-ReadGMT(gmtpath, limit = c(3, 80))
+ReadGMT(gmtpath, limit = c(0, Inf))
 }
 \arguments{
 \item{gmtpath}{The path to gmt file.}
